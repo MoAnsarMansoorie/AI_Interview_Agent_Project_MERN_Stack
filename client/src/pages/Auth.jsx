@@ -3,8 +3,30 @@ import { FaRobot } from "react-icons/fa";
 import { IoSparkles } from "react-icons/io5";
 import { motion } from "motion/react"
 import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../utils/firebase.js';
+import axios from 'axios';
+import { SERVER_URL } from '../App.jsx';
 
 const Auth = () => {
+  
+  const handleGoogleAuth = async () => {
+    try {
+      const response = await signInWithPopup(auth, provider);
+      let User = response.user;
+      let name = User.displayName;
+      let email = User.email;
+
+      const result = await axios.post(`${SERVER_URL}/api/v1/auth/google`, { name, email }, {
+        withCredentials: true
+      });
+      console.log(result.data)
+      
+    } catch (error) {
+      console.log("Google AuthError", error)
+    }
+  }
+
   return (
     <div className='w-full min-h-screen flex justify-center items-center bg-[#f3f3f3] px-6 py-20'>
       <motion.div 
@@ -33,6 +55,7 @@ const Auth = () => {
         </p>
 
         <motion.button 
+          onClick={handleGoogleAuth}
           whileHover={{opacity:0.9, scale: 1.03}}
           whileTap={{opacity:1, scale:0.98}}
         className='w-full flex items-center justify-center bg-black text-white gap-3 border border-gray-300 rounded-full shadow-md py-3 text-sm font-medium'>
