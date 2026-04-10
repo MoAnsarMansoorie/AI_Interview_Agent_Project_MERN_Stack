@@ -5,10 +5,14 @@ import Home from "./pages/Home"
 import Auth from './pages/Auth'
 import { useEffect } from 'react'
 import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { clearUserData, setUserData } from './redux/userSlice'
 
 export const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000"
+axios.defaults.withCredentials = true
 
 function App() {
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -16,10 +20,16 @@ function App() {
         const response = await axios.get(`${SERVER_URL}/api/v1/user/current-user`, {
           withCredentials: true, // Include cookies in the request
         });
-        console.log(`Current user data:`, response.data)
-        
+        // console.log(`Current user data:`, response.data)
+        dispatch(setUserData(response.data))
       } catch (error) {
+        if (error.response?.status === 401) {
+          console.log(`No active session; current-user is protected.`)
+          dispatch(clearUserData())
+          return
+        }
         console.log(`Error in fetching current user`, error)
+        dispatch(clearUserData())
       }
     }
     getCurrentUser()
