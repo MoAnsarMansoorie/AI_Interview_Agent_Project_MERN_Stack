@@ -3,7 +3,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "ai-interview-agent-9876b.firebaseapp.com",
@@ -18,5 +17,9 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+
+// Configure GoogleAuthProvider for redirect-based auth
+provider.addScope('profile');
+provider.addScope('email');
 
 export { auth, provider };
